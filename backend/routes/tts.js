@@ -7,7 +7,7 @@ const {saveToHistory, getHistory} = require('../db');
 router.post('/generate', async (req, res) => {
     const {text, language} = req.body;
 
-    if (text || text.trim().length === 0) {
+    if (!text || text.trim().length === 0) {
         return res.status(400).json({error: 'The text can not be empty'});
     }
 
