@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text to Speech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <span class="logo">TTS by edvt</span>
+    <div class="header-right">
+      <div class="stats-pill" id="statsPill">0 generated</div>
+      <button id="themeToggle" class="mode-btn" aria-label="Toggle theme">Mode</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>Turn text into speech</h1>
+
+    <div class="layout">
+      <div class="card fade-in" style="animation-delay: 0.05s">
+        <div class="dropzone" id="dropzone">
+          <textarea id="textInput" placeholder="Type, paste or drop a .txt file here..." maxlength="2000"></textarea>
+          <div class="dropzone-overlay">
+            <span>Drop your .txt file</span>
+          </div>
+        </div>
+
+        <div class="input-meta">
+          <span id="charCount">0 / 2000</span>
+          <span class="kbd-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to generate</span>
+        </div>
+
+        <div class="controls">
+          <div class="control-row">
+            <label for="rateSlider">Speed</label>
+            <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1">
+            <span class="value-badge" id="rateValue">1.0x</span>
+          </div>
+          <div class="control-row">
+            <label for="pitchSlider">Pitch</label>
+            <input type="range" id="pitchSlider" min="0" max="2" step="0.1" value="1">
+            <span class="value-badge" id="pitchValue">1.0</span>
+          </div>
+          <div class="control-row voice-row">
+            <label>Voice</label>
+            <div class="voice-picker" id="voicePicker">
+              <button type="button" class="voice-trigger" id="voiceTrigger">
+                <span class="voice-trigger-text" id="voiceTriggerText">Loading voices...</span>
+                <span class="chevron">›</span>
+              </button>
+
+              <div class="voice-dropdown" id="voiceDropdown">
+                <input type="text" class="voice-search" id="voiceSearch" placeholder="Search voices...">
+                <div class="voice-list" id="voiceList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="advanced-toggle" id="advancedToggle">
+          <span>Advanced settings</span>
+          <span class="chevron">›</span>
+        </button>
+
+        <div class="advanced-panel" id="advancedPanel">
+          <div class="control-row">
+            <label for="volumeSlider">Volume</label>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+            <span class="value-badge" id="volumeValue">100%</span>
+          </div>
+          <label class="checkbox-row">
+            <input type="checkbox" id="autoPlayCheck">
+            <span>Auto-play after generating</span>
+          </label>
+        </div>
+
+        <div class="waveform" id="waveform">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="actions">
+          <button id="previewBtn" class="btn btn-secondary">
+            <span class="btn-label">Listen</span>
+          </button>
+          <button id="generateBtn" class="btn btn-primary">
+            <span class="btn-label">Generate MP3</span>
+            <span class="btn-spinner"></span>
+            <span class="btn-check">✓</span>
+          </button>
+        </div>
+      </div>
+
+      <section class="card fade-in" style="animation-delay: 0.15s">
+        <div class="history-header">
+          <h2>History</h2>
+          <span class="history-count" id="historyCount"></span>
+        </div>
+        <ul id="historyList"></ul>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js/speechPreview.js"></script>
+  <script src="js/historyPanel.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
