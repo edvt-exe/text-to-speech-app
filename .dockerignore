@@ -1,0 +1,47 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Build artifacts
+dist
+build
+*.tgz
+
+# Documentation
+README.md
+LICENSE
+docs
+
+# Test files
+test
+tests
+.test.js
+*.test.js
+coverage
+
+# Audio output (will be mounted as volume)
+audio-output
+history.db
+
+# Docker files (not needed in image)
+Dockerfile
+docker-compose.yml
+.dockerignore

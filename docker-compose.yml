@@ -1,0 +1,89 @@
+version: '3.9'
+
+services:
+  voicecraft-app:
+    # Build from local Dockerfile or pull pre-built image from registry
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Container name for easy reference and networking
+    container_name: voicecraft-app
+    
+    # Restart policy for production reliability
+    # WHY: 'unless-stopped' ensures the app restarts automatically if it crashes,
+    # but respects manual stops (docker stop) and doesn't restart on reboot if stopped
+    restart: unless-stopped
+    
+    # Port mapping: host:container
+    # WHY: Map port 3000 from container to host port 3000 for external access
+    # In production, you'd use a reverse proxy (nginx) on port 80 instead
+    ports:
+      - "3000:3000"
+    
+    # Environment variables
+    environment:
+      # Tell Node.js we're in production (enables performance optimizations)
+      NODE_ENV: production
+      # Port the application listens on inside the container
+      PORT: 3000
+    
+    # Volume mounts for persistent data
+    # WHY: Docker containers are ephemeral - without volumes, data is lost when container stops
+    # We mount two crucial paths:
+    # 1. SQLite database file (history.db) - stores all audio generation history
+    # 2. Audio output folder (audio-output) - stores generated MP3 files
+    volumes:
+      # Named volume for SQLite database - survives container restarts
+      # Point to the exact location where better-sqlite3 creates history.db
+      - voicecraft-db:/app/backend
+      # Named volume for generated audio files - survives container restarts
+      - voicecraft-audio:/app/backend/audio-output
+    
+    # Resource limits to prevent runaway memory/CPU usage
+    # WHY: In shared/cloud environments, resource limits prevent one container from
+    # consuming all system resources and affecting other services
+    deploy:
+      resources:
+        limits:
+          cpus: '1'          # Max 1 CPU core
+          memory: 512M       # Max 512MB RAM
+        reservations:
+          cpus: '0.5'        # Reserve at least 0.5 CPU cores
+          memory: 256M       # Reserve at least 256MB RAM
+    
+    # Logging configuration
+    # WHY: Prevents logs from consuming unlimited disk space
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Health check override (uses Dockerfile HEALTHCHECK by default)
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/tts/history', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+# Named volumes for persistent data
+# WHY: Named volumes survive container deletion and can be shared across containers
+# This prevents data loss when the container is removed or restarted
+volumes:
+  # SQLite database volume
+  # Contains: history.db (all audio generation records, cache hashes, share UUIDs)
+  voicecraft-db:
+    driver: local
+  
+  # Audio files volume
+  # Contains: All generated MP3 files (speech_*.mp3)
+  voicecraft-audio:
+    driver: local
+
+# Network configuration (optional - creates a default bridge network)
+# WHY: All services can communicate via container name (voicecraft-app) in the network
+networks:
+  default:
+    name: voicecraft-network
